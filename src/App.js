@@ -1,4 +1,3 @@
-import logo from "./logo.svg";
 import "./App.css";
 import { Helmet } from "react-helmet-async";
 
@@ -11,21 +10,37 @@ function App() {
       </Helmet>
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
+          <h1>Flutter Element Embedding in React</h1>
+          <section className="App-Logo-Row">
+            <img
+              src={"./react-logo.svg"}
+              className="App-logo"
+              alt="React Logo"
+            />
+            <img
+              src={"./flutter_icon.svg"}
+              className="App-logo"
+              alt="Flutter Logo"
+            />
+          </section>
+
+          <div id="loading"></div>
           <div
             style={{
               height: 720,
               width: 1152,
             }}
+            className="flutter_container"
             id="flutter_target"
-          ></div>
+          />
+
           <a
             className="App-link"
-            href="https://reactjs.org"
+            href="https://github.com/lucas-goldner/flutter_react_element_embedding"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Learn React
+            Visit repo
           </a>
         </header>
       </div>
