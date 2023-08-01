@@ -1,70 +1,124 @@
-# Getting Started with Create React App
+# Flutter Element Embedding with React
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Steps to replicate
 
-In the project directory, you can run:
+Shoutouts to revosw for creating this small guide, without that I would have never figured this out https://github.com/flutter/flutter/issues/123940.
+Created this demo app, to have one example available so others can see it implemented. Also, because even with the explanation it was a bit confusing for me.
 
-### `npm start`
+Steps load your Flutter app into any React app:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+1. Run this command in your Flutter app to create a web version:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```bash
+$ flutter build web --profile --dart-define=Dart2jsOptimization=O0
+```
 
-### `npm test`
+This will not produce the minified javascript version, since some adjustments need to be made in build output.
+That of course means, that the client will have to download a bigger bundle.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+2.  Copy the folder `web` from `/build/web/` to your ` public` folder in your React app. In this project I renamed the file to `flutter`.\
+    That means all of our flutter files are hosted at `YOUR_HOST/flutter/`.\
+    Head over to `public/flutter/main.dart.js`\
+    In the next step replace the t1 path with your foldername.\
 
-### `npm run build`
+```js
+// what you will need to find
+    getAssetUrl$1(asset) {
+      var t1;
+      if (A.Uri_parse(asset, 0, null).get$hasScheme())
+        return A._Uri__uriEncode(B.List_5Q7, asset, B.C_Utf8Codec, false);
+      t1 = this.get$_baseUrl();
+      return A._Uri__uriEncode(B.List_5Q7, (t1 == null ? "" : t1) + "assets/" + asset, B.C_Utf8Codec, false);
+    }
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+// replaced
+    getAssetUrl$1(asset) {
+      var t1;
+      if (A.Uri_parse(asset, 0, null).get$hasScheme())
+        return A._Uri__uriEncode(B.List_5Q7, asset, B.C_Utf8Codec, false);
+      t1 = "/flutter/";
+      return A._Uri__uriEncode(B.List_5Q7, (t1 == null ? "" : t1) + "assets/" + asset, B.C_Utf8Codec, false);
+    }
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+3. Edit `flutter.js`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```js
+// Search for this
+function getBaseURI() {
+  const base = document.querySelector("base");
+  return (base && base.getAttribute("href")) || "";
+}
 
-### `npm run eject`
+// Use the same path as before
+function getBaseURI() {
+  return "/flutter/";
+}
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+4. Create a flutter_init.js file inside your public folder and paste the following content it:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```js
+window._stateSet = function () {};
+window.addEventListener("load", function (ev) {
+  let target = document.querySelector("#flutter_target");
+  _flutter.loader.loadEntrypoint({
+    onEntrypointLoaded: async function (engineInitializer) {
+      let appRunner = await engineInitializer.initializeEngine({
+        hostElement: target,
+      });
+      await appRunner.runApp();
+    },
+  });
+});
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+5. Install `react-helmet-async` so we can run our flutter_init script
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```bash
+$ yarn add react-helmet-async
+```
 
-## Learn More
+6. Setup is done now head back to your React app:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+You need to wrapp your React App with a HelmetProvider and provide an helmetContext (can be empty).\
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```js
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App'
+import { HelmetProvider, Helmet } from "react-helmet-async"
+import './index.css'
 
-### Code Splitting
+const helmetContext = {};
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+    <React.StrictMode>
+        <HelmetProvider context={helmetContext}>
+            <App />
+        </HelmetProvider>
+    </React.StrictMode>,
+)
+```
 
-### Analyzing the Bundle Size
+Now that is taken care of add a Helmet component and run the `flutter_init.js`.
+This will load the Flutter app and that was it!
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```js
+function App() {
+  return (
+    <>
+      <Helmet>
+        <script src="/flutter_init.js" defer></script>
+      </Helmet>
+      <div
+        style={{ aspectRatio: 9 / 19.5 }}
+        id="flutter_target"
+        className="h-full"
+      ></div>
+    </>
+  );
+}
+```

@@ -23,7 +23,6 @@ function App() {
               alt="Flutter Logo"
             />
           </section>
-
           <div id="loading"></div>
           <div
             style={{
