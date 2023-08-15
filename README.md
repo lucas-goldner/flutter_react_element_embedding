@@ -87,7 +87,7 @@ You need to wrapp your React App with a HelmetProvider and provide an helmetCont
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
-import { HelmetProvider, Helmet } from "react-helmet-async"
+import { HelmetProvider } from "react-helmet-async"
 import './index.css'
 
 const helmetContext = {};
@@ -101,14 +101,17 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 )
 ```
 
-Now that is taken care of add a Helmet component and run the `flutter_init.js`.
+Now that is taken care of add a Helmet component and add our `flutter_init.js` + `flutter.js`.
 This will load the Flutter app and that was it!
 
 ```js
+import { Helmet } from "react-helmet-async";
+
 function App() {
   return (
     <>
       <Helmet>
+        <script src="/flutter/flutter.js" defer></script>
         <script src="/flutter_init.js" defer></script>
       </Helmet>
       <div
