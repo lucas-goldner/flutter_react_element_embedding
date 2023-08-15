@@ -26,11 +26,10 @@ That of course means, that the client will have to download a bigger bundle.
 ```js
 // what you will need to find
     getAssetUrl$1(asset) {
-      var t1;
-      if (A.Uri_parse(asset, 0, null).get$hasScheme())
+      var t1, fallbackBaseUrl, t2;
+      if (A.Uri_parse(asset).get$hasScheme())
         return A._Uri__uriEncode(B.List_5Q7, asset, B.C_Utf8Codec, false);
-      t1 = this.get$_baseUrl();
-      return A._Uri__uriEncode(B.List_5Q7, (t1 == null ? "" : t1) + "assets/" + asset, B.C_Utf8Codec, false);
+      t1 = this._assetBase;
     }
 
 // replaced
@@ -39,7 +38,6 @@ That of course means, that the client will have to download a bigger bundle.
       if (A.Uri_parse(asset, 0, null).get$hasScheme())
         return A._Uri__uriEncode(B.List_5Q7, asset, B.C_Utf8Codec, false);
       t1 = "/flutter/";
-      return A._Uri__uriEncode(B.List_5Q7, (t1 == null ? "" : t1) + "assets/" + asset, B.C_Utf8Codec, false);
     }
 ```
 
